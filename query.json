@@ -1,0 +1,8 @@
+{
+  "subject": "users:peter",
+  "action" : "read",
+  "resource": "resource:accounts:axial",
+  "context": {
+    "remoteIP": "10.64.2.45"
+  }
+}

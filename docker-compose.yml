@@ -1,0 +1,48 @@
+###########################################################################
+#######             FOR DEMONSTRATION PURPOSES ONLY                 #######
+###########################################################################
+#                                                                         #
+# If you have not yet read the tutorial, do so now:                       #
+#  https://ory-am.gitbooks.io/hydra/content/tutorial.html                 #
+#                                                                         #
+# This set up is only for demonstration purposes. The login               #
+# endpoint can only be used if you follow the steps in the tutorial.      #
+#                                                                         #
+###########################################################################
+
+version: '2'
+
+services:
+
+  redis-admin:
+    image: actency/docker-phpredisadmin
+    links:
+      - redis:redis
+    ports:
+      - 8080:80
+    environment:
+      - REDIS_1_HOST=redis
+
+  hydra:
+    image: oryd/hydra
+    links:
+     - redis:redis
+    ports:
+      - "4444:4444"
+      - "4445:4445"
+    environment:
+      - LOG_LEVEL=debug
+      - SYSTEM_SECRET=systemsecrethere
+      - DATABASE_URL=redis://redis:6379/0
+      - FORCE_ROOT_CLIENT_CREDENTIALS=admin:demo-password
+      - ACCESS_TOKEN_LIFESPAN=3600m
+      - ID_TOKEN_LIFESPAN=4600m
+      - AUTHORIZE_CODE_LIFESPAN=5600m
+    restart: unless-stopped
+
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ./docker_data/redis_data:/data

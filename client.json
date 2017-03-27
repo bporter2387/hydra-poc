@@ -1,0 +1,26 @@
+{
+  "owner": "my.email@gmail.com",
+  "scope": "read replace update delete create",
+  "public": false,
+  "client_name": "user-public-id",
+  "redirect_uris": [
+    "https://some.domain.net/home",
+    "https://some.domain.net/some/other/restricted/home"
+  ],
+  "grant_types": [
+    "implicit",
+    "refresh_token",
+    "authorization_code",
+    "password",
+    "client_credentials"
+  ],
+  "response_types": [
+    "code",
+    "token",
+    "id_token"
+  ],
+  "client_uri": "https://some.domain.net/company/admin",
+  "contacts": [
+    "my.email@gmail.com"
+  ]
+}
