@@ -2,56 +2,6 @@
 
 Bootstrap your test environment
 ```
-mkdir hydra_poc
-cd hydra_poc
-vim docker-compose.yml
-```
-
-docker-compose.yml
-```
-version: '2'
-
-services:
-
-  redis-admin:
-    image: actency/docker-phpredisadmin
-    links:
-      - redisd:redis
-    ports:
-      - 8080:80
-    environment:
-      - REDIS_1_HOST=redis
-
-  hydra:
-    image: oryd/hydra
-    links:
-     - redisd:redisd
-    volumes:
-      - ./hydra_data:/root
-    ports:
-      - "4444:4444"
-      - "4445:4445"
-    environment:
-      - LOG_LEVEL=debug
-      - SYSTEM_SECRET=systemsecrethere
-      - DATABASE_URL=redis://redisd:6379/0
-      - FORCE_ROOT_CLIENT_CREDENTIALS=admin:demo-password
-      - ACCESS_TOKEN_LIFESPAN=60d
-      - ID_TOKEN_LIFESPAN=4600m
-      - AUTHORIZE_CODE_LIFESPAN=5600m
-    restart: unless-stopped
-
-  redisd:
-    image: redis
-    ports:
-      - 6379:6379
-    volumes:
-      - ./redis_data:/data
-
-```
-
-### Bring up the stack
-```
 docker-compose up -d
 ```
 
