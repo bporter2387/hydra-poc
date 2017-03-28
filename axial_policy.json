@@ -1,3 +1,5 @@
+
+
 {
   "description": "Axial Member",
   "subjects": ["role:member"],
@@ -12,9 +14,26 @@
   "conditions": {}
 }
 
+{
+  "description": "Axial Member DELETE",
+  "subjects": ["role:member"],
+  "actions" : ["delete", "replace"],
+  "effect": "allow",
+  "resources": [
+    "some.domain.com:accounts:<.*>:offices/<.*>"
+  ],
+  "conditions": {}
+}
+
+
+
+
+
+
+ANONYMOUS
 
 {
-  "description": "Anonymous User",
+  "description": "Anonymous User ALLOW",
   "subjects": ["role:anonymous"],
   "actions" : ["read"],
   "effect": "allow",
@@ -24,6 +43,18 @@
     "some.domain.com:users:<.*>",
     "some.domain.com:events",
     "some.domain.com:me"
+  ],
+  "conditions": {}
+}
+
+
+{
+  "description": "Anonymous User DENY",
+  "subjects": ["role:anonymous"],
+  "actions" : ["read"],
+  "effect": "deny",
+  "resources": [
+    "some.domain.com:accounts:<.*>:icons"
   ],
   "conditions": {}
 }
