@@ -1,0 +1,90 @@
+---
+service:
+  name: 'account'
+  acl:
+    - pattern: '/accounts'
+      rules:
+        - allow: true
+          permission: read
+          role: anonymous
+        - allow: true
+          permission: create
+          role: member
+    - pattern: '/accounts/{[a-fA-F0-9]{32}}'
+      rules:
+        - allow: true
+          permission: read
+          role: anonymous
+        - allow: true
+          permission: update
+          role: member
+    - pattern: '/accounts/{[a-fA-F0-9]{32}}/members'
+      rules:
+        - allow: true
+          permission: read
+          role: anonymous
+        - allow: true
+          permission: update
+          role: member
+    - pattern: '/accounts/{[a-fA-F0-9]{32}}/icons'
+      rules:
+        - allow: true
+          permission: create
+          role: member
+    - pattern: '/accounts/{[a-fA-F0-9]{32}}/offices'
+      rules:
+        - allow: true
+          permission: read
+          role: anonymous
+        - allow: true
+          permission: create
+          role: member
+    - pattern: '/accounts/{[a-fA-F0-9]{32}}/offices/{\d+}'
+      rules:
+        - allow: true
+          permission: read
+          role: anonymous
+        - allow: true
+          permission: replace
+          role: member
+        - allow: true
+          permission: delete
+          role: member
+    - pattern: '/accounts/{[a-fA-F0-9]{32}}/projects'
+      rules:
+        - allow: true
+          permission: read
+          role: anonymous
+    - pattern: '/accounts/{[a-fA-F0-9]{32}}/campaigns'
+      rules:
+        - allow: true
+          permission: read
+          role: anonymous
+    - pattern: '/accounts/{[a-fA-F0-9]{32}}/transactions'
+      rules:
+        - allow: true
+          permission: read
+          role: anonymous
+    - pattern: '/accounts/{[a-fA-F0-9]{32}}/industries'
+      rules:
+        - allow: true
+          permission: read
+          role: anonymous
+        - allow: true
+          permission: replace
+          role: member
+    - pattern: '/users/{[a-fA-F0-9]{32}}'
+      rules:
+        - allow: true
+          permission: read
+          role: member
+    - pattern: '/events'
+      rules:
+        - allow: true
+          permission: create
+          role: member
+    - pattern: '/me'
+      rules:
+        - allow: true
+          permission: read
+          role: anonymous

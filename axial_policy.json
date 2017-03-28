@@ -1,0 +1,29 @@
+{
+  "description": "Axial Member",
+  "subjects": ["role:member"],
+  "actions" : ["read", "create", "update", "replace"],
+  "effect": "allow",
+  "resources": [
+    "some.domain.com:accounts:<.*>:transactions",
+    "some.domain.com:users:<.*>:industries",
+    "some.domain.com:events:<.*>",
+    "some.domain.com:me:<.*>"
+  ],
+  "conditions": {}
+}
+
+
+{
+  "description": "Anonymous User",
+  "subjects": ["role:anonymous"],
+  "actions" : ["read"],
+  "effect": "allow",
+  "resources": [
+    "some.domain.com:accounts:<.*>",
+    "some.domain.com:accounts:<.*>:<[members|offices|projects|campaigns|transactions|industries]>",
+    "some.domain.com:users:<.*>",
+    "some.domain.com:events",
+    "some.domain.com:me"
+  ],
+  "conditions": {}
+}

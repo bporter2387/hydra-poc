@@ -1,11 +1,11 @@
 {
-  "description": "Axial Member",
-  "subjects": ["users:<[peter|giff]>", "groups:member"],
+  "description": "Some Member",
+  "subjects": ["users:<[peter|giff]>", "admin", "groups:member"],
   "actions" : ["read", "<[create|update]>", "replace"],
   "effect": "allow",
   "resources": [
-    "resources:accounts:<.*>",
-    "resources:users:<.*>"
+    "some.domain.com:accounts:<.*>",
+    "some.domain.com:users:<.*>"
   ],
   "conditions": {
     "remoteIP": {

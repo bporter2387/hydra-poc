@@ -1,0 +1,42 @@
+###########################################################################
+#######             FOR DEMONSTRATION PURPOSES ONLY                 #######
+###########################################################################
+#                                                                         #
+# If you have not yet read the tutorial, do so now:                       #
+#  https://ory-am.gitbooks.io/hydra/content/tutorial.html                 #
+#                                                                         #
+# This set up is only for demonstration purposes. The login               #
+# endpoint can only be used if you follow the steps in the tutorial.      #
+#                                                                         #
+###########################################################################
+
+version: '2'
+
+services:
+
+  # redis-admin:
+  #   image: actency/docker-phpredisadmin
+  #   links:
+  #     - redis:redis
+  #   ports:
+  #     - 8080:80
+  #   environment:
+  #     - REDIS_1_HOST=redis
+
+  master:
+    image: redis
+    ports:
+      - 36379:6379
+    volumes:
+      - ./redis/master.conf:/etc/redis/master.conf
+    command: redis-server /etc/redis/master.conf
+
+  slave_1:
+    image: redis
+    ports:
+      - 36380:6379
+    volumes:
+      - ./redis/redis_node.conf:/etc/redis/redis_node.conf
+    command: redis-server /etc/redis/redis_node.conf
+    links:
+      - master:master_redis

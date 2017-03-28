@@ -12,13 +12,12 @@ docker-compose up -d
 
 
 
-
+# ADMIN TOKENS
 
 
 ### Generate Access Token (`hydra.warden`)
-> Using the **admin** username and **demo-password** password we defined in the FORCE_ROOT_CLIENT_CREDENTIALS environment variable, we'll generate an admin access token that is allowed to check if a token has access to a resource.
+> Using the **admin** username and **demo-password** password we defined in the FORCE_ROOT_CLIENT_CREDENTIALS environment variable in docker-compose.yml, we'll generate an admin access token that is allowed to check if a token has access to a resource. We could use **scope=hydra** to allow all hydra permissions to this token, but we'll keep them separate for now.
 
-> *Note: The backend will generate this on successful login of the user and set a JWT cookie with the access token for the Frontend to use*
 
 ```
 curl -s -k -X POST \
@@ -88,13 +87,8 @@ curl -s -k \
 
 
 
-
-
-
-
-
 ### Generate a new Policy for Authorization
-> Using the **hydra.policies** access token, Create a new Policy
+> Using the **hydra.policies** access token as the Authorization header, Create a new Policy. These policies are global.
 
 ```
 curl -s -k \
@@ -111,7 +105,7 @@ curl -s -k \
 
 ```
 {
-  "description": "Axial Member",
+  "description": "Some Member",
   "subjects": ["users:<[peter|giff]>", "groups:member"],
   "actions" : ["read", "<[create|update]>", "replace"],
   "effect": "allow",
@@ -134,27 +128,31 @@ curl -s -k \
 > ...response from hydra
 
 ```
-response data
-```
-
-> Am I allowed access to the resource? (Use the client access token with hydra.warden scope)
-
-```
-curl -k -s \
-	-H "Content-Type: application/json" \
-	-H "Authorization:bearer hydra.warden.access.token.here" \
-	--data '@query.json' \
-  https://localhost:4444/warden/token/allowed | jq .
-```
-
-*Example query.json*
-```
 {
-  "subject": "users:peter",
-  "action" : "read",
-  "resource": "resource:accounts:axial",
-  "context": {
-    "remoteIP": "10.64.2.45"
+  "id": "13a146fe-0b62-4775-8ffb-0af8971aca9e",
+  "description": "Some Member",
+  "subjects": [
+    "users:<[peter|giff]>",
+    "admin",
+    "groups:member"
+  ],
+  "effect": "allow",
+  "resources": [
+    "some.domain.com:accounts:<.*>",
+    "some.domain.com:users:<.*>"
+  ],
+  "actions": [
+    "read",
+    "<[create|update]>",
+    "replace"
+  ],
+  "conditions": {
+    "remoteIP": {
+      "type": "CIDRCondition",
+      "options": {
+        "cidr": "10.0.0.1/16"
+      }
+    }
   }
 }
 ```
@@ -169,8 +167,42 @@ curl -k -s \
 
 
 
+> Using a token generated with **hydra.warden** scope as the Authorization bearer, we'll send the following data `query_with_token.json` to check if the `token` token has `action` privileges to the `resource` resources within the following `scopes` (read) given the `context` matching the conditions in one of the policies created.
+
+```
+curl -k -s \
+	-H "Content-Type: application/json" \
+	-H "Authorization:bearer oljNZBNToJlX_HG4jHgnEqbxoaAgPl5lB-SoV-0P_IQ.HTubih0M0_OCnmVMgOHCWqlStTMTBnxH16Gj_rBSOoQ" \
+	--data '@query_with_token.json' \
+  https://localhost:4444/warden/token/allowed | jq .
+```
+
+*Example query_with_token.json*
+```
+{
+  "scopes": ["read"],
+  "token": "-Hes4s_tXRwHoMpiRZi0XvCvuwswHPu9EcWUFs0T5lE.wGXrT8VLWzAbQtgmPOTCtkQFvdJ6uJ3pUtLjREnpcQ0",
+  "resource": "some.domain.com:accounts:some-account",
+  "action": "replace",
+  "context": {
+    "remoteIP": "10.0.0.45"
+  }
+}
+
+```
 
 
+
+
+
+
+
+
+
+
+
+
+> *Note: The backend will generate this on successful login of the user and set a JWT cookie with the access token for the Frontend to use*
 
 
 
@@ -233,6 +265,9 @@ curl -s -k \
 	-d '@client.json' \
   https://localhost:4444/clients | jq .
 ```
+
+
+
 
 > Example client.json
 

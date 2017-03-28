@@ -1,0 +1,9 @@
+{
+  "scopes": ["read"],
+  "token": "-Hes4s_tXRwHoMpiRZi0XvCvuwswHPu9EcWUFs0T5lE.wGXrT8VLWzAbQtgmPOTCtkQFvdJ6uJ3pUtLjREnpcQ0",
+  "resource": "some.domain.com:accounts:some-account",
+  "action": "replace",
+  "context": {
+    "remoteIP": "10.0.0.45"
+  }
+}
