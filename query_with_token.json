@@ -1,9 +1,9 @@
 {
-  "scopes": ["read"],
-  "token": "-Hes4s_tXRwHoMpiRZi0XvCvuwswHPu9EcWUFs0T5lE.wGXrT8VLWzAbQtgmPOTCtkQFvdJ6uJ3pUtLjREnpcQ0",
-  "resource": "some.domain.com:accounts:some-account",
-  "action": "replace",
+  "scopes": ["someuser"],
+  "token": "bgMwnQXYtL_v4tpNlS-xQFOglwd3pthnmkODoi2uCCQ.0rY7FYBqb2UqzBKbEN2l5tmiPS7tkf2ayMUydIm63D4",
+  "resource": "some.domain.com:accounts:someaccount",
+  "action": "read",
   "context": {
-    "remoteIP": "10.0.0.45"
+    "remoteIP": "10.0.0.23"
   }
 }

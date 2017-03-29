@@ -1,6 +1,6 @@
 {
   "owner": "my.email@gmail.com",
-  "scope": "read replace update delete create",
+  "scope": "my_uid someuser",
   "public": false,
   "client_name": "user-public-id",
   "redirect_uris": [

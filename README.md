@@ -94,8 +94,8 @@ curl -s -k \
 curl -s -k \
   -X POST \
   -H "Content-Type: application/json" \
-	-H "Authorization:bearer 78luCtLzDihRt_NetmlTcehpANLQkqUvXkOoMRDOcd0.q3YCAiNwqjL6T8Wf6_dgbrgF18NebzBGbDReEIiFBfg" \
-  -d '@policy.json' \
+	-H "Authorization:bearer 1NLbBOmdYZs8fA4RC_iYcczHNfAtvpCeF6OhDGUXLkk.-x0JcjsbbmUGa1ezs5Gn8GGo-JDjDtuEl8uchjx_62Q" \
+  -d '@policy_no_conditions.json' \
   "https://localhost:4444/policies" | jq .
 ```
 
@@ -172,7 +172,7 @@ curl -s -k \
 ```
 curl -k -s \
 	-H "Content-Type: application/json" \
-	-H "Authorization:bearer oljNZBNToJlX_HG4jHgnEqbxoaAgPl5lB-SoV-0P_IQ.HTubih0M0_OCnmVMgOHCWqlStTMTBnxH16Gj_rBSOoQ" \
+	-H "Authorization:bearer 1NLbBOmdYZs8fA4RC_iYcczHNfAtvpCeF6OhDGUXLkk.-x0JcjsbbmUGa1ezs5Gn8GGo-JDjDtuEl8uchjx_62Q" \
 	--data '@query_with_token.json' \
   https://localhost:4444/warden/token/allowed | jq .
 ```
@@ -261,7 +261,7 @@ curl -s -k \
 curl -s -k \
   -X POST \
 	-H "Content-Type: application/json" \
-	-H "Authorization: bearer 8WyvslooM8JK-Q4kg5iVC37nEGKIg2xwaJbazB-5zt8.kzLsucLs_69cd4gdjmNt7OKDhcst4r2MfqzAT4wXPr4" \
+	-H "Authorization: bearer hcpsxsoD9a0VaQMmgtqL-0QCD9VN1Oluf4uRbL-pIWk.UKrXYQ8sER32c3kqsWr9dRBB16y1fhmv8Id6iS2lOzg" \
 	-d '@client.json' \
   https://localhost:4444/clients | jq .
 ```
@@ -346,8 +346,8 @@ curl -s -k \
 curl -s -k -X POST \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d grant_type=client_credentials \
-  -d scope=read \
-  -u '436ea2f1-3fa9-418a-b8bf-7d83a0a63fec:4bn0%Vm&=fvd' \
+  -d scope=my_custom_scope \
+  -u '40ff2609-123a-45c5-abad-759829a3423d:>cHX$V;pyEOX' \
   https://localhost:4444/oauth2/token | jq .
 ```
 
