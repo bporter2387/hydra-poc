@@ -1,10 +1,10 @@
 {
   "description": "Some Member",
-  "subjects": ["users:<[peter|giff]>", "admin", "groups:member"],
+  "subjects": ["users:<[peter|giff]>", "admin", "groups:member", "CLIENT_ID_HERE"],
   "actions" : ["read", "<[create|update]>", "replace"],
   "effect": "allow",
   "resources": [
-    "my_uid:some.domain.com:accounts:<.*>",
-    "my_uid:some.domain.com:users:<.*>"
+    "some.domain.com:accounts:<.*>",
+    "some.domain.com:users:<.*>"
   ]
 }

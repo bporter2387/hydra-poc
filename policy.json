@@ -1,6 +1,6 @@
 {
   "description": "Some Member",
-  "subjects": ["users:<[peter|giff]>", "admin", "groups:member"],
+  "subjects": ["users:<[peter|giff]>", "admin", "groups:member", "CLIENT_ID_HERE"],
   "actions" : ["read", "<[create|update]>", "replace"],
   "effect": "allow",
   "resources": [
