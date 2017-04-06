@@ -1,9 +1,8 @@
 {
-  "scopes": ["someuser"],
-  "token": "bgMwnQXYtL_v4tpNlS-xQFOglwd3pthnmkODoi2uCCQ.0rY7FYBqb2UqzBKbEN2l5tmiPS7tkf2ayMUydIm63D4",
-  "resource": "some.domain.com:accounts:someaccount",
+  "token": "RlsKitQjXXP4BYucsmOcyfdCAZWASvFY4Pu_5idpfMs.GAxhU9cixdjfM56V3S_GaDECRkG49AuT9HM8o2IhoRQ",
+  "resource": "read:content:published_from:user:<.*>",
   "action": "read",
   "context": {
-    "remoteIP": "10.0.0.23"
+    "subject": "01118cc2-a86b-4dc0-96cc-13dc739d838f"
   }
 }

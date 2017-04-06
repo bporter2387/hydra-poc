@@ -1,60 +1,187 @@
 
+Global Roles
+Anonymous User
+User free or paid
 
+
+Company Roles
+  Admin - only "admin" perms
+  Owner - full perms
+
+Staff Roles
+  User - Axial staff
+  Admin - Can administer staff (User)
+  Owner - Superuser
+
+
+perform action on
+  |
+  --> action:resource_name
+
+
+
+# Anonymous User (no login authentication)
+#   Permissions:
+#     view = read
 {
-  "description": "Axial Member",
-  "subjects": ["role:member"],
-  "actions" : ["read", "create", "update", "replace"],
-  "effect": "allow",
-  "resources": [
-    "some.domain.com:accounts:<.*>:transactions",
-    "some.domain.com:users:<.*>:industries",
-    "some.domain.com:events:<.*>",
-    "some.domain.com:me:<.*>"
-  ],
-  "conditions": {}
-}
-
-{
-  "description": "Axial Member DELETE",
-  "subjects": ["role:member"],
-  "actions" : ["delete", "replace"],
-  "effect": "allow",
-  "resources": [
-    "some.domain.com:accounts:<.*>:offices/<.*>"
-  ],
-  "conditions": {}
-}
-
-
-
-
-
-
-ANONYMOUS
-
-{
-  "description": "Anonymous User ALLOW",
+  "description": "Anonymous User",
   "subjects": ["role:anonymous"],
   "actions" : ["read"],
   "effect": "allow",
   "resources": [
-    "some.domain.com:accounts:<.*>",
-    "some.domain.com:accounts:<.*>:<[members|offices|projects|campaigns|transactions|industries]>",
-    "some.domain.com:users:<.*>",
-    "some.domain.com:events",
-    "some.domain.com:me"
+    "read:accounts:<.*>",
+    "read:users:<.*>",
+    "read:content:published_from:user:<.*>",
   ],
   "conditions": {}
 }
 
 
+
+
+# Free User (with login authentication)
+#   Permissions:
+#     view = read
 {
-  "description": "Anonymous User DENY",
-  "subjects": ["role:anonymous"],
+  "description": "Free User",
+  "subjects": ["role:free_user"],
   "actions" : ["read"],
-  "effect": "deny",
+  "effect": "allow",
   "resources": [
-    "some.domain.com:accounts:<.*>:icons"
+    "read:accounts:<.*>",
+    "read:users:<.*>",
+    "read:content:published_from:<[user|company|account]>:<.*>",
   ],
   "conditions": {}
+}
+
+# Free User w/ Beta Features (with login authentication)
+#   Permissions:
+#     view = read
+#   must also provide a beta-token with the request to match policy
+{
+  "description": "Free User with Beta Access",
+  "subjects": ["role:free_user_beta"],
+  "actions" : ["read", "create", "update"],
+  "effect": "allow",
+  "resources": [
+    "read:accounts:<.*>",
+    "read:users:<.*>",
+    "read:content:published_from:<[user|company|account]>:<.*>",
+    "<[read|create|update]>beta:<.*>"
+  ],
+  "conditions": {
+    "verify_beta_user_token": {
+        "type": "StringEqualCondition",
+        "options": {
+            "equals": "unique-beta-token-to-route-to-beta-features"
+        }
+    }
+  }
+}
+
+
+
+
+
+#
+# User (with login authentication) - No Company
+#
+{
+  "description": "Standard User No Company",
+  "subjects": ["role:standard_user"],
+  "actions" : ["read", "create", "update", "delete"],
+  "effect": "allow",
+  "resources": [
+    "read:accounts:<.*>",
+    "read:users:<.*>",
+    "<.*>:my:projects:<.*>",
+    "<.*>:my:campaigns:<.*>"
+  ],
+  "conditions": {}
+}
+
+
+#
+# User (with login authentication) - Linked to a Company
+#
+{
+  "description": "Standard User Company Name",
+  "subjects": ["role:standard_user_with_company"],
+  "actions" : ["read", "create", "update", "delete"],
+  "effect": "allow",
+  "resources": [
+    "read:accounts:<.*>",
+    "read:users:<.*>",
+    "<.*>:my:projects:<.*>",
+    "<.*>:my:campaigns:<.*>",
+    "<.*>:company:projects:<.*>",
+    "<.*>:company:campaigns:<.*>"
+  ],
+  "conditions": {}
+}
+
+
+
+
+
+# Axial Staff User
+#   Permissions:
+#     create = create
+#     edit/reassign/move/deactivate = update
+#     view = read
+{
+  "description": "Axial Staff User",
+  "subjects": ["staff:user"],
+  "actions" : ["read", "create", "update"],
+  "effect": "allow",
+  "resources": [
+    "read:company:<.*>",
+    "read:users:<.*>",
+    "read:accounts:<.*>",
+    "<.*>:transactions:<.*>"
+  ],
+  "conditions": {}
+}
+
+
+
+# Axial Staff Admin
+#
+{
+  "description": "Axial Staff Admin",
+  "subjects": ["staff:admin"],
+  "actions" : ["read", "create", "update"],
+  "effect": "allow",
+  "resources": [
+    "read:company:<.*>",
+    "<.*>:users:<.*>",
+    "read:accounts:<.*>",
+    "<.*>:transactions:<.*>"
+  ],
+  "conditions": {}
+}
+
+
+# Axial SUPERUSER
+#
+{
+  "description": "Axial Staff Admin",
+  "subjects": ["staff:admin"],
+  "actions" : ["read", "create", "update"],
+  "effect": "allow",
+  "resources": [
+    "<.*>:company:<.*>",
+    "<.*>:users:<.*>",
+    "<.*>:accounts:<.*>",
+    "<.*>:transactions:<.*>"
+  ],
+  "conditions": {
+    "secret_text": {
+        "type": "StringEqualCondition",
+        "options": {
+            "equals": "hidden-god-only-secret-password"
+        }
+    }
+  }
 }

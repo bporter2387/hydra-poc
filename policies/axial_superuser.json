@@ -1,0 +1,20 @@
+{
+  "description": "Axial Staff Superuser",
+  "subjects": ["staff:admin", "axial-company_client-id"],
+  "actions" : ["read", "create", "update"],
+  "effect": "allow",
+  "resources": [
+    "<.*>:company:<.*>",
+    "<.*>:users:<.*>",
+    "<.*>:accounts:<.*>",
+    "<.*>:transactions:<.*>"
+  ],
+  "conditions": {
+    "secret_text": {
+        "type": "StringEqualCondition",
+        "options": {
+            "equals": "hidden-god-only-secret-password"
+        }
+    }
+  }
+}

@@ -1,17 +1,13 @@
 {
   "owner": "my.email@gmail.com",
-  "scope": "my_uid someuser",
+  "scope": "role:anonymous role:user staff:admin",
   "public": false,
-  "client_name": "user-public-id",
+  "client_name": "Global Authorization Token Warden",
   "redirect_uris": [
     "https://some.domain.net/home",
     "https://some.domain.net/some/other/restricted/home"
   ],
   "grant_types": [
-    "implicit",
-    "refresh_token",
-    "authorization_code",
-    "password",
     "client_credentials"
   ],
   "response_types": [

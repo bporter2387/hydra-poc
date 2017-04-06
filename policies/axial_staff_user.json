@@ -1,0 +1,13 @@
+{
+  "description": "Axial Staff User",
+  "subjects": ["staff:user", "axial-company_client-id"],
+  "actions" : ["read", "create", "update"],
+  "effect": "allow",
+  "resources": [
+    "read:company:<.*>",
+    "read:users:<.*>",
+    "read:accounts:<.*>",
+    "<.*>:transactions:<.*>"
+  ],
+  "conditions": {}
+}

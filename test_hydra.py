@@ -2,6 +2,8 @@
 
 
 import requests
+import os
+import json
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 # disable warnings for ssl cert
@@ -20,24 +22,30 @@ base_url = "https://localhost:4444"
 #   hydra - all of the above
 #
 #
-print("Generating a Warden Token for authorizing Tokens...")
+# if HYDRA_TOKEN isn't set in environment, then create one
+access_token = None
+try:
+    access_token = os.environ['HYDRA_TOKEN']
+except:
+    pass
 
-auth_url = "{}/oauth2/token".format(base_url)
-admin_resp = requests.post(
-        auth_url,
-        auth=('admin', 'demo-password'),
-        headers={'content-type': 'application/x-www-form-urlencoded'},
-        data={
-            'grant_type': 'client_credentials',
-            'scope': 'hydra'
-        },
-        verify=False
-    )
+if not access_token:
 
-access_token = admin_resp.json()["access_token"]
-print("\nAdmin Hydra Token: %s\n\n" % (access_token))
+    print("Generating a Warden Token for authorizing Tokens...")
+    auth_url = "{}/oauth2/token".format(base_url)
+    admin_resp = requests.post(
+            auth_url,
+            auth=('admin', 'demo-password'),
+            headers={'content-type': 'application/x-www-form-urlencoded'},
+            data={
+                'grant_type': 'client_credentials',
+                'scope': 'hydra'
+            },
+            verify=False
+        )
 
-
+    access_token = admin_resp.json()["access_token"]
+    print("\nAdmin Hydra Token: %s\n\n" % (access_token))
 
 
 
@@ -51,50 +59,63 @@ print("\nAdmin Hydra Token: %s\n\n" % (access_token))
 # Create a new "App" (client ID and secret)
 #
 #
-client_resp = requests.post(
-    "{}/clients".format(base_url),
-    headers={
-        'content-type': 'application/json',
-        "Authorization":"Bearer {}".format(access_token)
+client_id = None
+client_secret = None
+try:
+    client_id = os.environ['CLIENT_ID']
+    client_secret = os.environ['CLIENT_SECRET']
+except:
+    pass
+
+if not client_id or not client_secret:
+
+    client_resp = requests.post(
+        "{}/clients".format(base_url),
+        headers={
+            'content-type': 'application/json',
+            "Authorization":"Bearer {}".format(access_token)
+            },
+        json={
+          "owner": "my.email@gmail.com",
+          "scope": "role:user role:admin",
+          "public": False,
+          "client_name": "Company X's master account",
+          "redirect_uris": [
+            "https://some.domain.net/home",
+            "https://some.domain.net/some/other/restricted/home"
+          ],
+          "grant_types": [
+            "client_credentials"
+          ],
+          "response_types": [
+            "code",
+            "token",
+            "id_token"
+          ],
+          "client_uri": "https://some.domain.net/company/admin",
+          "contacts": [
+            "my.email@gmail.com"
+          ]
         },
-    json={
-      "owner": "my.email@gmail.com",
-      "scope": "all-members",
-      "public": False,
-      "client_name": "Company X's master account",
-      "redirect_uris": [
-        "https://some.domain.net/home",
-        "https://some.domain.net/some/other/restricted/home"
-      ],
-      "grant_types": [
-        "implicit",
-        "refresh_token",
-        "authorization_code",
-        "password",
-        "client_credentials"
-      ],
-      "response_types": [
-        "code",
-        "token",
-        "id_token"
-      ],
-      "client_uri": "https://some.domain.net/company/admin",
-      "contacts": [
-        "my.email@gmail.com"
-      ]
-    },
-    verify=False)
-
-print("Client Object: %s\n" % (client_resp.json()))
-client_id = client_resp.json()["id"]
-client_secret = client_resp.json()["client_secret"]
-
-print("Client ID: %s\nClient Secret: %s\n\n" % (client_id, client_secret))
+        verify=False)
 
 
+    print("CLIENT INFORMATION")
+    print(json.dumps(client_resp.json(), indent=4, sort_keys=True))
+    print("\n\n")
+    client_id = client_resp.json()["id"]
+    client_secret = client_resp.json()["client_secret"]
 
+    print("\
+    Client ID: %s \n\
+    Client Secret: %s \n\n\
+    \
+    You may want to run \n\
+    export CLIENT_ID=%s \n\
+    export CLIENT_SECRET=%s \n\n" % (client_id, client_secret, client_id, client_secret))
 
-
+else:
+    print('USING YOUR ENVIRONMENT CLIENT CREDENTIALS')
 
 
 
@@ -106,34 +127,56 @@ print("Client ID: %s\nClient Secret: %s\n\n" % (client_id, client_secret))
 # Create an access policy for the App. The subject must contain the client ID
 #
 #
-print("Creating a default access policy...")
+policy_id = None
+try:
+    policy_id = os.environ['POLICY_ID']
+except:
+    pass
 
-auth_url = "{}/policies".format(base_url)
-policy_payload = {
-    "description": "Axial Member",
-    "subjects": [client_id],
-    "actions" : ["read", "replace", "delete"],
-    "effect": "allow",
-    "resources": [
-        "some.domain.com:accounts:<.*>",
-        "some.domain.com:users:<.*>"
-    ],
-    "conditions": {}
-    }
 policy_headers = {
     'content-type': 'application/json',
     'accept': 'application/json;v=1',
     "Authorization":"Bearer {}".format(access_token)
     }
 
-policy_resp = requests.post(
+if not policy_id:
+
+    print("Creating a default access policy...")
+    auth_url = "{}/policies".format(base_url)
+    policy_payload = {
+      "description": "Admin User",
+      "subjects": ["role:admin", client_id],
+      "actions" : ["read", "create", "update", "delete"],
+      "effect": "allow",
+      "resources": [
+        "read:accounts:<.*>",
+        "read:users:<.*>",
+        "<.*>:my:projects:<.*>",
+        "<.*>:my:campaigns:<.*>"
+      ],
+      "conditions": {}
+    }
+
+    policy_resp = requests.post(
+                auth_url,
+                headers=policy_headers,
+                json=policy_payload,
+                verify=False)
+
+    print("Policy Created: \n")
+    print(json.dumps(policy_resp.json(), indent=4, sort_keys=True))
+
+
+else:
+    auth_url = "{}/policies/{}".format(base_url, policy_id)
+
+    policy_resp = requests.get(
             auth_url,
             headers=policy_headers,
-            json=policy_payload,
             verify=False)
 
-print("Policy Created: %s\n\n" % policy_resp.json())
-
+    print("Using Policy: \n")
+    print(json.dumps(policy_resp.json(), indent=4, sort_keys=True))
 
 
 
@@ -147,32 +190,36 @@ print("Policy Created: %s\n\n" % policy_resp.json())
 # Create a token for the Axial App (using client id and secret)
 #
 #
-print("Creating a token for the Axial App (credentials above)\n")
+client_access_token = None
 
-auth_url = "{}/oauth2/token".format(base_url)
-headers = {'content-type': 'application/x-www-form-urlencoded'}
-payload = {
-    'grant_type': 'client_credentials',
-    'scope': 'all-members'
-}
-app_resp = requests.post(
-        auth_url,
-        auth=(client_id, client_secret),
-        headers=headers,
-        data=payload,
-        verify=False
-    )
+try:
+    client_access_token = os.environ['CLIENT_ACCESS_TOKEN']
+except:
+    pass
 
-app_access_token = app_resp.json()["access_token"]
+if not client_access_token:
+    print("...creating a unique client access token.. (Logged in user)")
 
-print("App JSON: %s\n" % (app_resp.json()))
-print("App Access Token: %s\n\n" % (app_access_token))
+    auth_url = "{}/oauth2/token".format(base_url)
+    headers = {'content-type': 'application/x-www-form-urlencoded'}
+    payload = {
+        'grant_type': 'client_credentials',
+        'scope': "role:admin"
+    }
+    client_resp = requests.post(
+            auth_url,
+            auth=(client_id, client_secret),
+            headers=headers,
+            data=payload,
+            verify=False
+        )
 
+    client_access_token = client_resp.json()["access_token"]
 
+    print("...client access token created...")
+    print(json.dumps(client_resp.json(), indent=4, sort_keys=True))
 
-
-
-
+    print("CLIENT_ACCESS_TOKEN: %s\n" % (client_access_token))
 
 
 
@@ -195,12 +242,13 @@ introspect_resp = requests.post(
             'Authorization': 'bearer {}'.format(access_token)
         },
         data={
-            'token': '{}'.format(app_access_token),
+            'token': '{}'.format(client_access_token),
         },
         verify=False
     )
-print("Token Validity: %s\n\n" % (introspect_resp.json()))
-
+print("...checking to see if the token is valid..")
+print(json.dumps(introspect_resp.json(), indent=4, sort_keys=True))
+print("\n\n")
 # curl -s -k -X POST \
 #   -H "Content-Type: application/x-www-form-urlencoded" \
 #   -H "Authorization: bearer G9hI_-TUGApjCSQVJAMltbeYwMPhzHQ35XyJtuRVnYg.wzq2CoRAnaMLE8AzYQTA1vnt83SQiXUYvCGdiGCFCZ8" \
@@ -223,7 +271,7 @@ print("Token Validity: %s\n\n" % (introspect_resp.json()))
 # Check the app token to make sure it has access to the requested resource
 #
 #
-print("Checking to see if we have access..\n")
+print("...checking to see if the token has access..")
 access_resp = requests.post(
     "{}/warden/token/allowed".format(base_url),
     headers={
@@ -231,12 +279,12 @@ access_resp = requests.post(
         "Authorization":"Bearer {}".format(access_token)
         },
     json={
-          "scopes": ["all-members"],
-          "token": app_access_token,
-          "resource": "some.domain.com:accounts:some-account",
+          "scopes": ["role:admin"],
+          "token": client_access_token,
+          "resource": "read:accounts:some-account",
           "action": "read",
           "context": {}
         },
     verify=False)
 
-print("Allowed Access Response: %s\n\n" % (access_resp.json()))
+print(json.dumps(access_resp.json(), indent=4, sort_keys=True))

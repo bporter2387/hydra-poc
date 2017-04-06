@@ -1,0 +1,16 @@
+{
+  "description": "Anonymous User",
+  "subjects": ["role:anonymous", "01118cc2-a86b-4dc0-96cc-13dc739d838f"],
+  "actions" : ["read"],
+  "effect": "allow",
+  "resources": [
+    "read:accounts:<.*>",
+    "read:users:<.*>",
+    "read:content:published_from:user:<.*>"
+  ],
+  "conditions": {
+    "subject": {
+        "type": "EqualsSubjectCondition"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "description": "Free User",
+  "subjects": ["role:free_user"],
+  "actions" : ["read"],
+  "effect": "allow",
+  "resources": [
+    "read:accounts:<.*>",
+    "read:users:<.*>",
+    "read:content:published_from:<[user|company|account]>:<.*>",
+  ],
+  "conditions": {}
+}

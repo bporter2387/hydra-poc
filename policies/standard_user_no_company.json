@@ -1,0 +1,13 @@
+{
+  "description": "Standard User No Company",
+  "subjects": ["role:standard_user"],
+  "actions" : ["read", "create", "update", "delete"],
+  "effect": "allow",
+  "resources": [
+    "read:accounts:<.*>",
+    "read:users:<.*>",
+    "<.*>:my:projects:<.*>",
+    "<.*>:my:campaigns:<.*>"
+  ],
+  "conditions": {}
+}

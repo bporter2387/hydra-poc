@@ -1,0 +1,20 @@
+{
+  "description": "Free User with Beta Access",
+  "subjects": ["role:free_user_beta"],
+  "actions" : ["read", "create", "update"],
+  "effect": "allow",
+  "resources": [
+    "read:accounts:<.*>",
+    "read:users:<.*>",
+    "read:content:published_from:<[user|company|account]>:<.*>",
+    "<[read|create|update]>beta:<.*>"
+  ],
+  "conditions": {
+    "verify_beta_user_token": {
+        "type": "StringEqualCondition",
+        "options": {
+            "equals": "unique-beta-token-to-route-to-beta-features"
+        }
+    }
+  }
+}

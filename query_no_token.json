@@ -1,8 +1,6 @@
 {
-  "subject": "admin",
-  "resource": "some.domain.com:accounts:some-other",
+  "subject": "role:anonymous",
+  "resource": "update:accounts:some-other",
   "action": "read",
-  "context": {
-     "remoteIP": "10.0.4.23"
-   }
+  "context": {}
 }
