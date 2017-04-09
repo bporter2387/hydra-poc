@@ -7,7 +7,7 @@ services:
     links:
       - redis:redis
     ports:
-      - 8080:80
+      - 9001:80
     environment:
       - REDIS_1_HOST=redis
 
@@ -31,6 +31,35 @@ services:
       # - HTTPS_TLS_CERT_PATH=/etc/hydra/ssl/cert.pem
       # - HTTPS_TLS_KEY_PATH=/etc/hydra/ssl/key.pem
     restart: unless-stopped
+
+  proxy:
+    image: golang:1.8
+    hostname: proxy.axial.net
+    ports:
+      - 8080:8080
+    volumes:
+      - "$GOPATH:/go"
+      - "./goproxy:/app"
+    working_dir: /app/
+    extra_hosts:
+      blue-api.axial.net: 10.0.0.13
+    links:
+      - hydra:hydra
+    command: sh -c 'go get github.com/pilu/fresh && fresh -c fresh.conf'
+
+  nginx:
+    image: nginx
+    depends_on:
+      - proxy
+    ports:
+      - 80:80
+      - 443:443
+      - 30443:30443
+    links:
+      - proxy:proxy
+    volumes:
+      - "./goproxy/default.conf:/etc/nginx/conf.d/default.conf"
+      - "./ssl:/etc/nginx/ssl"
 
   redis:
     image: redis

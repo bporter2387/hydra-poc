@@ -1,2 +1,4 @@
 hydra
 docker_data
+ssl
+goproxy/tmp
